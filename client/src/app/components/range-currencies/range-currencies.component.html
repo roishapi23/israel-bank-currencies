@@ -1,0 +1,86 @@
+<div class="row">
+  <aside class="col-3 d-flex flex-column px-4">
+
+    <!-- date range input -->
+    <mat-form-field appearance="fill" class="example-form-field">
+      <mat-label>הזן טווח תאריכים</mat-label>
+      <mat-date-range-input [formGroup]="rangeForm" [max]="today" [rangePicker]="rangePicker">
+        <input formControlName="start" matStartDate placeholder="Start date">
+        <input formControlName="end" matEndDate placeholder="End date">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #rangePicker>
+        <mat-date-range-picker-actions>
+          <button mat-button matDateRangePickerCancel class="btn btn-danger btn-sm mx-1">ביטול</button>
+          <button mat-raised-button class="btn btn-primary btn-sm" matDateRangePickerApply>אישור</button>
+        </mat-date-range-picker-actions>
+      </mat-date-range-picker>
+    </mat-form-field>
+
+    <!-- select coins input -->
+    <mat-form-field>
+      <mat-label>מטבעות</mat-label>
+      <mat-select class="select" [formControl]="selectedCoins" multiple>
+        <!-- displaying amount of selected currencies -->
+        <mat-select-trigger>
+          {{selectedCoins.value ? selectedCoins.value[0] : ''}}
+          <span *ngIf="selectedCoins.value?.length > 1" class="example-additional-selection">
+            (+{{selectedCoins.value.length - 1}} {{selectedCoins.value?.length === 2 ? 'נוסף' : 'נוספים'}})
+          </span>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let coin of allCoins" [value]="coin" [disabled]="selectedCoins.value?.length > 5 && !selectedCoins.value?.includes(coin)">
+          {{coin}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- user amount input -->
+    <mat-form-field>
+      <mat-label>סכום</mat-label>
+      <input type="number" matInput [(ngModel)]="userAmount" >
+    </mat-form-field>
+
+    <!-- actions buttons -->
+    <button class="btn btn-primary btn-sm mb-2 mx-3"  (click)="changeRangeDates()" >הצג תאריכים</button>
+    <button class="btn btn-success btn-sm mx-3" [disabled]="displayedColumns.length == 0" (click)="export()">הורד טבלה</button>
+
+    <div *ngIf="errorMessage" class="error mt-3">{{errorMessage}}</div>
+  </aside>
+
+  <main class="col-9">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" [hidden]="displayedColumns.length == 0">
+
+      <!-- displying data -->
+      <ng-container *ngFor="let item of displayedColumns; let i = index" [matColumnDef]="item">
+        <th mat-header-cell *matHeaderCellDef> {{item}} </th>
+        <!-- if data is currency - display it with the calculation: currency * user amount -->
+        <td mat-cell *matCellDef="let element"> {{ i == 0 ? element[i] : calculateCurrencyValue( +element[i], userAmount )}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- message to fill the form -->
+    <div class="pickMessage" *ngIf="!displayedResultDates">
+      אנא מלאו את הפרטים
+    </div>
+
+    <!-- show the dates of the the displayed data -->
+    <div *ngIf="displayedResultDates && this.selectedCoins.value?.length > 0 && this.selectedCoins.value" class="py-3" style="text-align: center;">
+      מציג תוצאות עבור: {{ displayedResultDates }}
+    </div>
+
+
+  </main>
+
+
+</div>
+
+
+
+<!-- loading layer -->
+<ngx-spinner>
+  <p style="font-size: 20px; color: white">{{loadingText}}</p>
+</ngx-spinner>
