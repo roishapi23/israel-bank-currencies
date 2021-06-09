@@ -15,13 +15,13 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   getSingleDateCurrencies( date: {date:string} ) : Observable<CurrencyData[]>{
-    return this.http.post<CurrencyData[]>("http://localhost:3000/singleDate",date);
+    return this.http.post<CurrencyData[]>("https://ey-currencies.herokuapp.com/singleDate",date);
   }
 
   getRangeDatesCurrencies( data: {start:string,end:string, coins:string[]} ) : Observable<any[]>{
     console.log(data);
 
-    return this.http.post<any[]>("http://localhost:3000/rangeDates",data);
+    return this.http.post<any[]>("https://ey-currencies.herokuapp.com/rangeDates",data);
   }
 
 }

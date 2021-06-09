@@ -10,6 +10,10 @@ const port = process.env.PORT || 3000;
 app.use(cors())
 app.use(express.json());
 
+// use the angular build files - on production 
+const path = require("path")
+app.use(express.static(path.join(__dirname,"dist/ey-task")));
+
 // route for single date request
 app.post('/singleDate', async (req, res) => {
     let date = req.body.date;
@@ -32,6 +36,7 @@ app.post('/rangeDates', async (req, res) => {
     }
 })
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
-})
+// run server localy - on development
+// app.listen(port, () => {
+//     console.log(`Example app listening at http://localhost:${port}`);
+// })
